@@ -1,26 +1,65 @@
-# UAC-Bypass
-3 ways of bypassing admin restrictions/uac
+# 🛡️ UAC Bypass Techniques (Educational Purposes Only)
 
-# Bruteforce
-1. run userbruteforce.bat
-2. press 1 and choose your target
-3. press 2 and enter your targets username
-4. enter your password list (passlist.txt for default passlist)
-5. wait
+This project demonstrates **three different techniques** to bypass User Account Control (UAC) restrictions in Windows. It is intended for **educational and ethical testing** only.
 
-NOTE: if it stops at a random attempt that means the password its on contains one of these characters: !><|^ (or another weird character), just delete that attempt from the file and restart
+> ⚠️ DISCLAIMER: This repository is for learning purposes. Do not use these techniques on systems you do not own or have explicit permission to test.
 
-# Fake UAC Prompt
-1. close any cmd windows you got open
-2. run main.vbs
-3. hide the folder (to not be sus)
-4. ask parent/teacher to help
-5. enjoy the admin cmd
+---
 
-# Bypass
-1. download whatever installer you want
-2. make sure it has the uac shield logo in the corner of its icon
-3. drag it over bypass.bat
-4. have fun
+## 🧪 1. Customized Brute Force (UCE Edition)
 
-NOTE: if antivirus is detecing bypass.bat, do this with newbypass.bat
+A brute-force tool designed to attempt user account passwords in a controlled test environment.
+
+### ▶️ How to Use
+
+1. Run `userbruteforce.bat`.
+2. Press `1` to scan and choose your target.
+3. Press `2` and enter the username.
+4. Enter your password list (`passlist.txt` by default).
+5. Wait for the result.
+
+### ⚠️ Note
+
+If the process freezes, it's likely the password contains special characters such as: `! > < | ^`. Remove the problematic line from your wordlist and retry.
+
+---
+
+## 🎭 2. Fake UAC Prompt
+
+This technique simulates a UAC prompt to trick a user into granting admin rights.
+
+### ▶️ How to Use
+
+1. Close any open `cmd.exe` windows.
+2. Run `main.vbs`.
+3. Hide the folder to avoid suspicion.
+4. Ask an admin (e.g., parent/teacher) to "help" by entering credentials.
+5. A command window with elevated privileges will open.
+
+---
+
+## 🔓 3. UAC Shielded Installer Bypass
+
+This method uses legitimate installers with UAC to elevate privileges.
+
+### ▶️ How to Use
+
+1. Download a `.exe` installer that shows a UAC shield on its icon.
+2. Drag the installer over `bypass.bat`.
+3. If the script is blocked by antivirus, use `newbypass.bat` instead.
+4. Installer runs with elevated permissions.
+
+---
+
+## 🧼 Antivirus Detection Tip
+
+If `bypass.bat` is flagged by antivirus software:
+- Use `newbypass.bat`, a slightly altered version to avoid static detection.
+
+---
+
+### 📎 Educational Use Only
+
+These techniques are meant to understand how attackers might exploit weak UAC configurations and to help developers and administrators **harden their systems against these tactics**.
+
+---
